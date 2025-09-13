@@ -13,9 +13,11 @@ app.registerExtension({
                 
                 const updateVariations = async () => {
                     const lora_name = loraNameWidget.value;
-                    if (!lora_name) {
-                        variationWidget.options.values = ["Select a LoRA"];
-                        variationWidget.value = "Select a LoRA";
+
+                    // [!!! MODIFIED !!!] カタログが見つからない場合のエラー表示に対応
+                    if (!lora_name || lora_name === "CATALOG NOT FOUND OR EMPTY") {
+                        variationWidget.options.values = ["N/A"];
+                        variationWidget.value = "N/A";
                         return;
                     }
                     
@@ -29,7 +31,6 @@ app.registerExtension({
                         const data = await res.json();
                         
                         variationWidget.options.values = data.variations;
-                        // 新しいリストに現在の値がなければ、先頭の値にリセット
                         if (!data.variations.includes(variationWidget.value)) {
                             variationWidget.value = data.variations[0];
                         }
@@ -41,7 +42,6 @@ app.registerExtension({
 
                 loraNameWidget.callback = updateVariations;
                 
-                // 初期ロード時に一度実行
                 setTimeout(updateVariations, 100);
             };
         }
